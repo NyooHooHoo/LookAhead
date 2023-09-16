@@ -4,11 +4,10 @@ import Log
 
 
 class EyeTracker:
-    def __init__(self):
-        pass
-        # connect to proper glasses
+    def __init__(self, imagery):
+        self.imagery = imagery
+
     def start(self):
-        print("EHLLO")
         self.api = adhawkapi.frontend.FrontendApi(ble_device_name='ADHAWK MINDLINK-303')
 
         # track events and that
@@ -23,25 +22,44 @@ class EyeTracker:
 
     @staticmethod
     def handle_eye_data(et_data: adhawkapi.EyeTrackingStreamData):
+        gaze = {}
+        eye_center = {}
+        pupil_diameter = {}
+        IMU = {}
+
         if et_data.gaze is not None:
             xvec, yvec, zvec, vergence = et_data.gaze
             print(f'Gaze={xvec:.2f},y={yvec:.2f},z={zvec:.2f},vergence={vergence:.2f}')
+            gaze = {"x": xvec:.2f, "y": yvec, "z": zvec, "vergence": vergence}
 
         if et_data.eye_center is not None:
             if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
                 rxvec, ryvec, rzvec, lxvec, lyvec, lzvec = et_data.eye_center
                 print(f'Eye center: Left=(x={lxvec:.2f},y={lyvec:.2f},z={lzvec:.2f}) '
                       f'Right=(x={rxvec:.2f},y={ryvec:.2f},z={rzvec:.2f})')
+                eye_center = {
+                    "left": {"x": lxvec, "y": lyvec, "z": lzvec}
+                    "right": {"x": rxvec, "y": ryvec, "z": rzvec}
+                }
 
         if et_data.pupil_diameter is not None:
             if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
                 rdiameter, ldiameter = et_data.pupil_diameter
                 print(f'Pupil diameter: Left={ldiameter:.2f} Right={rdiameter:.2f}')
+                pupil_diameter = {"left": ldiameter, "right": rdiameter}
 
         if et_data.imu_quaternion is not None:
             if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
                 x, y, z, w = et_data.imu_quaternion
                 print(f'IMU: x={x:.2f},y={y:.2f},z={z:.2f},w={w:.2f}')
+                IMU = {"x": x, "y": y, "z": z, "w": w}
+
+        liveimagery.update_information({
+            "eye_center": eye_center,
+            "gaze": gaze,
+            "pupil_diameter": pupil_diameter,
+            "IMU": IMU
+        })
 
     @staticmethod
     def handle_eye_events(event_type, timestamp, *args):
@@ -75,6 +93,7 @@ class EyeTracker:
 
 if __name__ == "__main__":
     eyetracker = EyeTracker()
+    eyetracker.start()
     try:
         while True:
             pass

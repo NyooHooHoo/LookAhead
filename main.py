@@ -5,7 +5,7 @@ from threading import Thread
 
 def main():
 	imagery = LiveImagery()
-	eyetracker = EyeTracker()
+	eyetracker = EyeTracker(imagery)
 
 	eyetracker_thread = Thread(target=eyetracker.start)
 	imagery_thread = Thread(target=imagery.display)
