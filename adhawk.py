@@ -5,7 +5,10 @@ import Log
 
 class EyeTracker:
     def __init__(self):
+        pass
         # connect to proper glasses
+    def start(self):
+        print("EHLLO")
         self.api = adhawkapi.frontend.FrontendApi(ble_device_name='ADHAWK MINDLINK-303')
 
         # track events and that
