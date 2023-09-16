@@ -54,7 +54,7 @@ class EyeTracker:
                 print(f'IMU: x={x:.2f},y={y:.2f},z={z:.2f},w={w:.2f}')
                 IMU = {"x": x, "y": y, "z": z, "w": w}
 
-        liveimagery.update_information({
+        self.imagery.update_information({
             "eye_center": eye_center,
             "gaze": gaze,
             "pupil_diameter": pupil_diameter,
