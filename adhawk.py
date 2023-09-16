@@ -30,7 +30,7 @@ class EyeTracker:
         if et_data.gaze is not None:
             xvec, yvec, zvec, vergence = et_data.gaze
             print(f'Gaze={xvec:.2f},y={yvec:.2f},z={zvec:.2f},vergence={vergence:.2f}')
-            gaze = {"x": xvec:.2f, "y": yvec, "z": zvec, "vergence": vergence}
+            gaze = {"x": xvec, "y": yvec, "z": zvec, "vergence": vergence}
 
         if et_data.eye_center is not None:
             if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
@@ -38,7 +38,7 @@ class EyeTracker:
                 print(f'Eye center: Left=(x={lxvec:.2f},y={lyvec:.2f},z={lzvec:.2f}) '
                       f'Right=(x={rxvec:.2f},y={ryvec:.2f},z={rzvec:.2f})')
                 eye_center = {
-                    "left": {"x": lxvec, "y": lyvec, "z": lzvec}
+                    "left": {"x": lxvec, "y": lyvec, "z": lzvec},
                     "right": {"x": rxvec, "y": ryvec, "z": rzvec}
                 }
 
