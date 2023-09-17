@@ -15,10 +15,10 @@ def main():
 	
 	try:
 		while True:
-			words = listen_and_record()
+			#words = listen_and_record()
 
-			if words[0] == "find":
-				pass # sailesh do your thing
+			#if words[0] == "find":
+			pass # sailesh do your thing
 
 	except (KeyboardInterrupt, SystemExit):
 		eyetracker.shutdown()

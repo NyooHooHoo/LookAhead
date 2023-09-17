@@ -1,6 +1,8 @@
 from threading import Thread
 import math
 import cv2
+import numpy as np
+import vision
 
 
 def draw_text(img, text,
@@ -31,7 +33,7 @@ def range_map(value, in_min, in_max, out_min, out_max):
 def conv(x):
 	return f'{x:.2f}'
 
-N = 100
+N = 5
 previous_N_sideeyes = [[-1, -1] for _ in range(0, N)]
 
 def calculate_sideeyes(x, y):
@@ -54,8 +56,6 @@ def calculate_sideeyes(x, y):
 
 
 class LiveImagery:
-	
-
 	def __init__(self):
 		self.cap = cv2.VideoCapture(1)
 		self.stop = False
@@ -87,7 +87,7 @@ class LiveImagery:
 
 		return image
 
-	def draw_crosshair(self, image):
+	def get_crosshair_location(self):
 		x = int(range_map(self.gaze["x"], -5, 5, 0, 639))
 		if x < 0:
 			x = 0
@@ -99,6 +99,10 @@ class LiveImagery:
 			y = 0
 		elif y > 479:
 			y = 479
+		return x, y
+
+	def draw_crosshair(self, image):
+		x, y = self.get_crosshair_location()
 		cv2.circle(image, calculate_sideeyes(x, y), 5, (0,0,255), -1)
 
 		return image
@@ -107,9 +111,30 @@ class LiveImagery:
 	def display(self):
 		while True:
 			ret, frame = self.cap.read()
+			cv2.imwrite("temp.jpg", frame)
+			objects_ = vision.localize_objects(path="temp.jpg")
+
+			areas, names = [], []
+			for object_ in objects_:
+				print(object_.bounding_poly.normalized_vertices)
+				x1 = int(object_.bounding_poly.normalized_vertices[0].x * 640)
+				y1 = int(object_.bounding_poly.normalized_vertices[0].y * 480)
+				x2 = int(object_.bounding_poly.normalized_vertices[2].x * 640)
+				y2 = int(object_.bounding_poly.normalized_vertices[2].y * 480)
+				x, y = self.get_crosshair_location()
+				if x1 <= x <= x2 and y1 <= y <= y2:
+					areas.append((x2-x1)*(y2-y1))
+					names.append(object_.name)
+
+				frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
+			if names:
+				object_name = names[areas.index(min(areas))]
+				print(object_name)
+			else:
+				print("ur not looking at anything broski")
 
 			frame = self.draw_crosshair(self.display_info(frame))
-	  
+	
 			cv2.imshow('LookAhead', frame)
 
 			if cv2.waitKey(1) == ord('q'):
