@@ -35,13 +35,19 @@ def looking_at(objects, x, y):
 
 def distance_from(objects, target, x):
     dists = []
+    widths = []
     for object_ in objects:
         if object_.name == target:
             verticies = object_.bounding_poly.normalized_vertices
             dist = x - (verticies[0].x + verticies[1].x)/2
             dists.append(dist)
+            widths.append(abs(verticies[1].x-((verticies[0].x + verticies[1].x)/2)))
     if dists:
-        return min(dists)
+        min_index = dists.index(min(dists))
+        if widths[min_index] >= min(dists):
+            return 0 
+        else:
+            if min(dists)
     return "not found"
         
 
