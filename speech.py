@@ -1,42 +1,52 @@
 import speech_recognition as sr
+import pygame
 
-recognizer = sr.Recognizer()
-microphone = sr.Microphone()
+name = "iris"
 
+def play_wav_file(file_path):
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
 
 def listen_and_record():
-    with microphone as source:
-        print("Listening for 'hello'... Say 'hello' to start recording.")
-        audio = recognizer.listen(source)
+    recognizer = sr.Recognizer()
+    microphone = sr.Microphone()
 
-    try:
-        # Recognize the keyword
-        keyword = recognizer.recognize_google(audio)
-        if "hello" in keyword.lower():
-            print("Keyword 'hello' detected. Recording...")
+    while True:
+        with microphone as source:
+            print(f"Listening for {name}... Say {name} to start recording.")
+            audio = recognizer.listen(source)
 
-            # Listen for a single sentence
-            with microphone as source:
-                audio = recognizer.listen(source, phrase_time_limit=5)
+        try:
+            # Recognize the keyword
+            keyword = recognizer.recognize_google(audio)
+            if name in keyword.lower():
+                print(f"Keyword {name} detected. Recording...")
 
-            try:
-                # Recognize speech
-                sentence = recognizer.recognize_google(audio)
-                return sentence
-                # print("You said:", sentence)
-            except sr.UnknownValueError:
-                return None
-                # print("Couldn't understand the sentence. Please try again.")
+                play_wav_file("iris_sound.wav")
 
-        else:
-            return None
-            # print("Keyword not detected. Please say 'hello'.")
+                # Listen for a single sentence
+                with microphone as source:
+                    audio = recognizer.listen(source, phrase_time_limit=5)
 
-        recognizer = sr.Recognizer()
+                try:
+                    # Recognize speech
+                    sentence = recognizer.recognize_google(audio)
+                    print("You said:", sentence)
+                except sr.UnknownValueError:
+                    print("Couldn't understand the sentence. Please try again.")
+                    recognizer = sr.Recognizer()
 
-    except sr.UnknownValueError:
-        return None
-        # print("Couldn't understand the keyword. Please try again.")
+            else:
+                print(f"Keyword not detected. Please say {name}.")
+
+            recognizer = sr.Recognizer()
+
+        except sr.UnknownValueError:
+            print("Couldn't understand the keyword. Please try again.")
+            recognizer = sr.Recognizer()
 
 if __name__ == "__main__":
     listen_and_record()
