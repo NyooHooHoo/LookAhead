@@ -1,6 +1,7 @@
 from adhawk import EyeTracker
 from liveimagery import LiveImagery
 from threading import Thread
+from speech import listen_and_record
 
 
 def main():
@@ -14,7 +15,11 @@ def main():
 	
 	try:
 		while True:
-			pass
+			words = listen_and_record()
+
+			if words[0] == "find":
+				pass # sailesh do your thing
+
 	except (KeyboardInterrupt, SystemExit):
 		eyetracker.shutdown()
 		imagery.shutdown()
