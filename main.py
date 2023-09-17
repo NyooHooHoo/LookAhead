@@ -24,10 +24,11 @@ try:
 			text_to_speech("Finding " + ' '.join(words[1:]))
 			
 
-		elif input_text == "what am i looking at"
+		elif input_text == "what am i looking at":
 			# looking_at(localize_objects(),)
+			pass
 
-		elif input_text == "turn obstacle detection mode on"
+		elif input_text == "turn obstacle detection mode on":
 			text_to_speech("Turning obstacle detection mode on")
 
 		else:
