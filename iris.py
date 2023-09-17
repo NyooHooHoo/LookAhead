@@ -15,7 +15,7 @@ FORMAT = pyaudio.paInt16
 channels = 1
 sample_rate = 44100
 record_seconds = 5
-min_volume = 5  # 0.18
+min_volume = 2  # 0.18
 stream = p.open(format=FORMAT,
                 channels=channels,
                 rate=sample_rate,

@@ -37,11 +37,14 @@ try:
 
 			elif "what am i looking at" in " ".join(words):
 				play_wav_file("iris_sound.wav")
-				text_to_speech(f"You are looking at a {imagery.object_name}")
+				if imagery.object_name == "unidentifiable object":
+					text_to_speech("I don't know.")
+				else:
+					text_to_speech(f"You are looking at a {imagery.object_name}")
 
 			elif "enable obstacle mode" in " ".join(words):
 				play_wav_file("iris_sound.wav")
-				text_to_speech("Turning obstacle detection mode on")
+				text_to_speech("Turning obstacle detection mode on. Please tilt your head down to 45 degrees.")
 				imagery.set_obstacle_mode(True)
 
 			elif "disable obstacle mode" in " ".join(words):

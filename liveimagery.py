@@ -3,6 +3,11 @@ import math
 import cv2
 import numpy as np
 import vision
+import time
+from narrator import text_to_speech
+
+
+OBSTACLE_WARN_FREQUENCY = 3  # seconds
 
 
 def draw_text(img, text,
@@ -60,6 +65,7 @@ class LiveImagery:
 		self.cap = cv2.VideoCapture(1)
 		self.stop = False
 		self.obstacle_mode = False
+		self.prev_warn = time.time()
 
 		self.eye_center = {
 			"left": {"x": 0, "y": 0, "z": 0},
@@ -116,7 +122,7 @@ class LiveImagery:
 			cv2.imwrite("temp.jpg", frame)
 			objects_ = vision.localize_objects(path="temp.jpg")
 
-			areas, names = [], []
+			areas, names, best_rank, best_rank_name = [], [], 0, ""
 			for object_ in objects_:
 				x1 = int(object_.bounding_poly.normalized_vertices[0].x * 640)
 				y1 = int(object_.bounding_poly.normalized_vertices[0].y * 480)
@@ -127,7 +133,23 @@ class LiveImagery:
 					areas.append((x2-x1)*(y2-y1))
 					names.append(object_.name) 
 
+				if self.obstacle_mode:
+					# rank by size
+					# rank by proxminity to center (x = 320)
+					size = ((x2-x1)*(y2-y1)) / 307200  # 640 * 480
+					proximity = abs(320 - x) / 320
+					rank = size * 0.5 + proximity * 0.5
+					if rank > best_rank:
+						best_rank = rank
+						best_rank_name = object_.name
+					
+
 				frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
+
+			if self.obstacle_mode and best_rank_name != "" and time.time() - self.prev_warn > OBSTACLE_WARN_FREQUENCY:
+				text_to_speech(f"Warning. {best_rank_name} ahead.")
+				self.prev_warn = time.time()
+
 			if names:
 				self.object_name = names[areas.index(min(areas))]
 				print(self.object_name)
@@ -150,7 +172,7 @@ class LiveImagery:
 	def shutdown(self):
 		self.stop = True
 
-	def set_obstacle_mode(state):
+	def set_obstacle_mode(self, state):
 		self.obstacle_mode = state
 
 
