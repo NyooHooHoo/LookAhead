@@ -47,7 +47,8 @@ def distance_from(objects, target, x):
         if widths[min_index] >= min(dists):
             return 0 
         else:
-            if min(dists)
+            if min(dists):
+                pass
     return "not found"
         
 

@@ -1,10 +1,12 @@
 from adhawk import EyeTracker
 from liveimagery import LiveImagery
 from threading import Thread
-from speech import listen_and_record
 from narrator import text_to_speech 
 from vision import *
 from adhawk import *
+import iris
+import sounddevice as sd
+import pygame
 
 
 imagery = LiveImagery()
@@ -12,26 +14,39 @@ eyetracker = EyeTracker(imagery)
 
 eyetracker_thread = Thread(target=eyetracker.start)
 imagery_thread = Thread(target=imagery.display)
+
 eyetracker_thread.start()
 imagery_thread.start()
 
+def play_wav_file(file_path):
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+
 try:
-	while True:
-		input_text = listen_and_record().lower()
-		words = input_text.lower().split(' ')
+	with sd.Stream(callback=iris.update_talking):
+		while True:
+			sd.sleep(1)
 
-		if words[0] == "find":
-			text_to_speech("Finding " + ' '.join(words[1:]))
-			
+			words = iris.get_text().lower().split(' ')
 
-		elif input_text == "what am i looking at"
-			# looking_at(localize_objects(),)
+			if words[0] == "find":
+				play_wav_file("iris_sound.wav")
+				text_to_speech("Finding " + ' '.join(words[1:]))
 
-		elif input_text == "turn obstacle detection mode on"
-			text_to_speech("Turning obstacle detection mode on")
+			elif "what am i looking at" in " ".join(words):
+				play_wav_file("iris_sound.wav")
+				text_to_speech(f"You are looking at a {imagery.object_name}")
 
-		else:
-				break
+			elif "enable obstacle mode" in " ".join(words):
+				play_wav_file("iris_sound.wav")
+				text_to_speech("Turning obstacle detection mode on")
+
+			iris.set_text("")
+
 except (KeyboardInterrupt, SystemExit):
 	eyetracker.shutdown()
 	imagery.shutdown()
+	iris.close()

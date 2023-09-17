@@ -67,6 +67,7 @@ class LiveImagery:
 		self.gaze = {"x": 0, "y": 0, "z": 0, "vergence": 0}
 		self.pupil_diameter = {"left": 0, "right": 0}
 		self.IMU = {"x": 0, "y": 0, "z": 0, "w": 0}
+		self.object_name = "unidentifiable object"
 
 	def display_info(self, image):
 
@@ -116,7 +117,6 @@ class LiveImagery:
 
 			areas, names = [], []
 			for object_ in objects_:
-				print(object_.bounding_poly.normalized_vertices)
 				x1 = int(object_.bounding_poly.normalized_vertices[0].x * 640)
 				y1 = int(object_.bounding_poly.normalized_vertices[0].y * 480)
 				x2 = int(object_.bounding_poly.normalized_vertices[2].x * 640)
@@ -124,14 +124,14 @@ class LiveImagery:
 				x, y = self.get_crosshair_location()
 				if x1 <= x <= x2 and y1 <= y <= y2:
 					areas.append((x2-x1)*(y2-y1))
-					names.append(object_.name)
+					names.append(object_.name) 
 
 				frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
 			if names:
-				object_name = names[areas.index(min(areas))]
-				print(object_name)
+				self.object_name = names[areas.index(min(areas))]
+				print(self.object_name)
 			else:
-				print("ur not looking at anything broski")
+				self.object_name = "unidentifiable object"
 
 			frame = self.draw_crosshair(self.display_info(frame))
 	
