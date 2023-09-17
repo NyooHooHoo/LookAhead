@@ -22,6 +22,7 @@ try:
 
 		if words[0] == "find":
 			text_to_speech("Finding " + ' '.join(words[1:]))
+			
 
 		elif input_text == "what am i looking at"
 			# looking_at(localize_objects(),)
