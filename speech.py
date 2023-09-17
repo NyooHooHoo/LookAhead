@@ -1,5 +1,6 @@
 import speech_recognition as sr
 import pygame
+from narrator import text_to_speech 
 
 name = "iris"
 
@@ -17,6 +18,7 @@ def listen_and_record():
     while True:
         with microphone as source:
             print(f"Listening for {name}... Say {name} to start recording.")
+            text_to_speech(f"Listening for {name}... Say {name} to start recording.")
             audio = recognizer.listen(source)
 
         try:
@@ -35,6 +37,7 @@ def listen_and_record():
                     # Recognize speech
                     sentence = recognizer.recognize_google(audio)
                     print("You said:", sentence)
+                    return sentence
                 except sr.UnknownValueError:
                     print("Couldn't understand the sentence. Please try again.")
                     recognizer = sr.Recognizer()
