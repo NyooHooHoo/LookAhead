@@ -32,25 +32,54 @@ def looking_at(objects, x, y):
         return names[areas.index(min(areas))]
     return "not found"
 
+N = 100
+# choose a number that will never appear
+previous_N_closest = [-69420 for _ in range(0, N)]
 
-def distance_from(objects, target, x):
-    dists = []
-    widths = []
-    for object_ in objects:
+# moves back all of the elements in previous_N_closest, returns rolling average
+def move_back_N(dir):
+    for i in range(0, N - 1):
+        previous_N_closest[i] = previous_N_closest[i + 1]
+    previous_N_closest[N - 1] = dir
+    total_counted, sum = 0, 0
+    for i in range(0, N):
+        if previous_N_closest[i] != -69420:
+            total_counted += 1
+            sum += previous_N_closest[i]
+    if total_counted == 0:
+        return 0
+    else:
+        return sum / total_counted
+
+# custom comparator for sorting by name of the identified object
+def comp(param):
+    return param.name
+
+# finds the closest x distance - returns the rolling average
+# -69420 means nothing's there, x < 0 means turn left, 0 < x means turn right, perfect 0 means you're staring at it
+def x_distance(objects, target, x):
+    sorted(objects, key=comp)
+
+    # first index of an object that matches the target
+    ind = -1
+
+    for i, object_ in objects:
         if object_.name == target:
-            verticies = object_.bounding_poly.normalized_vertices
-            dist = x - (verticies[0].x + verticies[1].x)/2
-            dists.append(dist)
-            widths.append(abs(verticies[1].x-((verticies[0].x + verticies[1].x)/2)))
-    if dists:
-        min_index = dists.index(min(dists))
-        if widths[min_index] >= min(dists):
-            return 0 
-        else:
-            if min(dists):
-                pass
-    return "not found"
-        
+            ind = i
+            break
+    
+    if ind == -1:
+        return move_back_N(-69420)
+    else:
+        verticies = objects[ind].bounding_poly.normalized_vertices
+        # if it's between, it's just zero
+        cur_dist = 0
+        if x < verticies[0].x:
+            return abs(x - verticies[0].x)
+        elif verticies[1].x < x:
+            return abs(x - verticies[1].x)
+        return move_back_N(cur_dist)
+
 
 def detect_obstacle(objects):
     areas, names = [], []

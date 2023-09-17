@@ -8,7 +8,6 @@ import iris
 import sounddevice as sd
 import pygame
 
-
 imagery = LiveImagery()
 eyetracker = EyeTracker(imagery)
 
@@ -43,6 +42,12 @@ try:
 			elif "enable obstacle mode" in " ".join(words):
 				play_wav_file("iris_sound.wav")
 				text_to_speech("Turning obstacle detection mode on")
+				imagery.set_obstacle_mode(True)
+
+			elif "disable obstacle mode" in " ".join(words):
+				play_wav_file("iris_sound.wav")
+				text_to_speech("Turning obstacle detection mode off")
+				imagery.set_obstacle_mode(False)
 
 			iris.set_text("")
 

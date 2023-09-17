@@ -59,6 +59,7 @@ class LiveImagery:
 	def __init__(self):
 		self.cap = cv2.VideoCapture(1)
 		self.stop = False
+		self.obstacle_mode = False
 
 		self.eye_center = {
 			"left": {"x": 0, "y": 0, "z": 0},
@@ -148,6 +149,9 @@ class LiveImagery:
 
 	def shutdown(self):
 		self.stop = True
+
+	def set_obstacle_mode(state):
+		self.obstacle_mode = state
 
 
 if __name__ == "__main__":
