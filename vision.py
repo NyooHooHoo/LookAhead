@@ -1,4 +1,4 @@
-def localize_objects(path):
+def localize_objects(path=None, bytes_data=None):
     """Localize objects in the local image.
 
     Args:
@@ -8,9 +8,12 @@ def localize_objects(path):
 
     client = vision.ImageAnnotatorClient()
 
-    with open(path, "rb") as image_file:
-        content = image_file.read()
-    image = vision.Image(content=content)
+    if path is not None:
+        with open(path, "rb") as image_file:
+            content = image_file.read()
+        image = vision.Image(content=content)
+    else:
+        image = vision.Image(content=bytes_data)
 
     objects = client.object_localization(image=image).localized_object_annotations
 
@@ -101,5 +104,6 @@ def show_boxes(objects):
 
 
 if __name__ == "__main__":
-    objects = localize_objects("images/test2.jpg")
-    print(looking_at(objects, 0.95, 0.75))
+    objects = localize_objects("image.jpg")
+    # print(looking_at(objects, 0.95, 0.75))
+    show_boxes(objects)
