@@ -1,5 +1,5 @@
 # LookAhead
-Hack The North X Submission - reading aid using eye tracking
+Hack The North X Submission - visual impairment aid using eye tracking 
 
 ## inspiration
 After recently learning that most blind people still retain a limited level of sight, we immediately set out to create a tool that could help them.
